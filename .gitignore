@@ -6,3 +6,4 @@ target/
 !.env.example
 artifacts/
 .DS_Store
+src-tauri/gen/
