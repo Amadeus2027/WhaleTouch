@@ -1,0 +1,6 @@
+{
+ "$schema":"https://schema.tauri.app/config/2", "productName":"WhaleTouch", "version":"0.1.0", "identifier":"io.amadeus.whaletouch",
+ "build":{"beforeDevCommand":"npm run dev","devUrl":"http://localhost:1420","beforeBuildCommand":"npm run build","frontendDist":"../dist"},
+ "app":{"windows":[{"label":"pet","title":"WhaleTouch","url":"index.html?window=pet","width":360,"height":560,"minWidth":240,"minHeight":360,"decorations":false,"transparent":true,"alwaysOnTop":true,"skipTaskbar":true,"resizable":true,"visible":false}],"security":{"csp":"default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' asset: http://asset.localhost data: blob:; connect-src ipc: http://ipc.localhost 'self'; font-src 'self' data:; worker-src 'self' blob:","assetProtocol":{"enable":true,"scope":["$APPDATA/models/**"]}}},
+ "bundle":{"active":true,"targets":["nsis"],"icon":["icons/icon.png","icons/icon.ico"],"windows":{"nsis":{"displayLanguageSelector":true,"languages":["SimpChinese","English"]}}}
+}

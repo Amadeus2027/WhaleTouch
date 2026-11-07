@@ -1,0 +1,35 @@
+name: Windows package
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install frontend dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build Windows application
+        run: npm run package
+      - name: Collect portable application and notices
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path artifacts/WhaleTouch -Force
+          Copy-Item target/release/whaletouch.exe artifacts/WhaleTouch/
+          Copy-Item README.md,NOTICE.md,LICENSE artifacts/WhaleTouch/
+          Copy-Item licenses artifacts/WhaleTouch/ -Recurse
+          Compress-Archive -Path artifacts/WhaleTouch -DestinationPath artifacts/WhaleTouch-windows-x64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: WhaleTouch-windows-x64
+          path: |
+            artifacts/WhaleTouch-windows-x64.zip
+            target/release/bundle/nsis/*setup.exe
+          retention-days: 14

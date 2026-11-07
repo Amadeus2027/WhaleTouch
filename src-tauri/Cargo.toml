@@ -1,0 +1,26 @@
+[package]
+name = "whaletouch"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+whaletouch-core = { path = "../core" }
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "stream", "native-tls"] }
+futures-util = "0.3"
+tokio = { version = "1", features = ["sync", "time", "macros", "fs"] }
+
+[target.'cfg(windows)'.dependencies]
+hidapi = { version = "2.6", default-features = false, features = ["windows-native"] }
+windows-sys = { version = "0.59", features = ["Win32_Security_Cryptography", "Win32_Foundation", "Win32_System_Memory", "Win32_UI_WindowsAndMessaging"] }
+
+[dependencies.chrono]
+version = "0.4"
+default-features = false
+features = ["clock"]

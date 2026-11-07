@@ -1,0 +1,6 @@
+{
+  "name": "whaletouch", "version": "0.1.0", "private": true, "type": "module",
+  "scripts": {"dev":"vite --host 0.0.0.0 --port 1420", "build":"tsc --noEmit && vite build", "tauri":"tauri", "test:core":"cargo test -p whaletouch-core", "desktop":"tauri dev", "package":"tauri build"},
+  "dependencies": {"@tauri-apps/api":"^2.8.0","pixi.js":"6.5.10","pixi-live2d-display":"0.4.0"},
+  "devDependencies": {"@tauri-apps/cli":"^2.8.0","typescript":"^5.9.0","vite":"^7.1.0"}
+}
