@@ -228,6 +228,12 @@ fn window_action(app: AppHandle, action: String) -> Result<(), String> {
 }
 #[tauri::command]
 fn pet_action(app: AppHandle, action: String) {
+    if action == "eat" {
+        let state = app.state::<AppState>();
+        let mut progress = state.progress.lock().unwrap();
+        progress.feeds += 1;
+        let _ = persist(state.dir.join("progress.json"), &*progress);
+    }
     let _ = app.emit("pet-action", action);
 }
 #[tauri::command]

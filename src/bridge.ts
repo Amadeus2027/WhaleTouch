@@ -9,7 +9,7 @@ export async function call<T=void>(command:string,args:Record<string,unknown>={}
  switch(command){
   case 'snapshot':return structuredClone(demo) as T;
   case 'save_settings':demo.settings=structuredClone(args.settings as Settings);localStorage.setItem('whaletouch-preview',JSON.stringify(demo.settings));await send('settings-changed',demo.settings);return undefined as T;
-  case 'pet_action':await send('pet-action',args.action);return undefined as T;
+  case 'pet_action':if(args.action==='eat')demo.progress.feeds++;await send('pet-action',args.action);return undefined as T;
   case 'record_progress':demo.progress.companion_seconds+=Number(args.seconds||0);if(args.feed)demo.progress.feeds++;return undefined as T;
   case 'window_action':if(args.action==='show')window.open('/?window=pet','whaletouch-pet','width=360,height=560');return undefined as T;
   case 'cancel_chat':return undefined as T;

@@ -12,7 +12,7 @@ export async function startPet(){
  const snap=await call<Snapshot>('snapshot');let settings=snap.settings;let renderer:CharacterRenderer|null=null;
  let action:Action='idle',started=performance.now(),activeUntil=0,lastInteraction=performance.now(),frame:TouchFrame|null=null,raf=0,loading=0,lastFrame=0;
  let visible=true,pointerDown=false,clickThrough=false,lastHit=true,ignore=false,dragging=false;let hideBubble:ReturnType<typeof setTimeout>|undefined;
- let autoAt=0,companionAt=Date.now();
+ let autoAt=0,companionAt=Date.now();let hitTimer:ReturnType<typeof setTimeout>|undefined;let hitGeneration=0;
  function say(text:string,always=false){if(settings.dnd&&!always)return;bubble.textContent=text;bubble.classList.add('visible');clearTimeout(hideBubble);hideBubble=setTimeout(()=>bubble.classList.remove('visible'),3500);}
  function draw(now:number){
   raf=0;if(!visible||document.hidden||!renderer)return;
@@ -48,13 +48,13 @@ export async function startPet(){
  await on<TouchFrame>('pad-frame',touch);
  await on<TouchFrame>('preview-touch',touch);
  await on<{enabled:boolean}>('pad-status',s=>{if(!s.enabled){frame=null;orb.classList.remove('active');act('idle');}});
- await on<Settings>('settings-changed',s=>{const changed=s.character!==settings.character||s.live2d!==settings.live2d||s.custom_model!==settings.custom_model;settings=s;document.documentElement.dataset.theme=s.dark?'dark':'light';shell.style.setProperty('--pet-scale',String(s.scale));if(changed)void load(s);else wake();});
+ await on<Settings>('settings-changed',s=>{const changed=s.character!==settings.character||s.live2d!==settings.live2d||s.custom_model!==settings.custom_model;settings=s;document.documentElement.dataset.theme=s.dark?'dark':'light';shell.style.setProperty('--pet-scale',String(s.scale));if(changed&&visible)void load(s);else if(visible)wake();});
  await on<string>('pet-action',a=>{
-  if(a==='clickthrough'){clickThrough=!clickThrough;if(native){void getCurrentWindow().setIgnoreCursorEvents(clickThrough);clearTimeout(hitTimer);lastHit=true;if(!clickThrough)void hitCheck();}say(clickThrough?'已开启穿透，右键托盘可恢复。':'已恢复鼠标互动。',true);return;}
+  if(a==='clickthrough'){clickThrough=!clickThrough;if(native){void getCurrentWindow().setIgnoreCursorEvents(clickThrough);lastHit=true;restartHit();}say(clickThrough?'已开启穿透，右键托盘可恢复。':'已恢复鼠标互动。',true);return;}
   if(a in {idle:1,touch:1,poke:1,lift:1,land:1,walk:1,eat:1,sleep:1,wake:1,chat:1,focus:1})act(a as Action);
-  if(a==='eat'){say('白饭才是小鲸鱼的能量来源！');void call('record_progress',{seconds:0,feed:true});}
+  if(a==='eat')say('白饭才是小鲸鱼的能量来源！');
  });
- await on<boolean>('pet-visible',v=>{void progress();visible=v;companionAt=Date.now();if(!v){frame=null;renderer?.dispose();renderer=null;if(raf)cancelAnimationFrame(raf);raf=0;}else void load(settings);});
+ await on<boolean>('pet-visible',v=>{void progress();visible=v;companionAt=Date.now();if(!v){loading++;frame=null;renderer?.dispose();renderer=null;if(raf)cancelAnimationFrame(raf);raf=0;}else void load(settings);restartHit();});
  await on<{text:string}>('timer-done',n=>say(n.text));
  await on<{delta:string;done:boolean}>('chat-chunk',c=>{if(c.delta){act('chat');}if(c.done)act('idle');});
  shell.addEventListener('contextmenu',e=>{e.preventDefault();void call('window_action',{action:'panel'});});
@@ -68,19 +68,20 @@ export async function startPet(){
  const up=()=>{pointerDown=false;if(frame?.active)touch({...frame,active:false,ended:true,gesture:'stroke'});};shell.addEventListener('pointerup',up);shell.addEventListener('pointercancel',up);
  document.querySelector('#open-panel')!.addEventListener('click',()=>void call('window_action',{action:'panel'}));
  document.querySelector('#hide-pet')!.addEventListener('click',()=>void call('window_action',{action:'hide'}));
- document.addEventListener('visibilitychange',()=>{if(document.hidden){if(raf)cancelAnimationFrame(raf);raf=0;}else wake();});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){if(raf)cancelAnimationFrame(raf);raf=0;}else{wake();restartHit();}});
  // Pointer hit-test only while visible; no continuous GPU pixel readback.
- let hitTimer:ReturnType<typeof setTimeout>|undefined;
- async function hitCheck(){
-  if(!native||!visible||document.hidden||clickThrough)return;
+ function restartHit(){hitGeneration++;clearTimeout(hitTimer);if(native&&visible&&!document.hidden&&!clickThrough)void hitCheck(hitGeneration);}
+ async function hitCheck(generation:number){
+  if(!native||!visible||document.hidden||clickThrough||generation!==hitGeneration)return;
   const win=getCurrentWindow();const [cursor,pos,size]=await Promise.all([cursorPosition(),win.outerPosition(),win.outerSize()]);
+  if(generation!==hitGeneration||!visible||clickThrough)return;
   const x=(cursor.x-pos.x)/size.width,y=(cursor.y-pos.y)/size.height;
   const toolHit=x>.72&&x<.98&&y>.9&&y<.99;
   const hit=pointerDown||toolHit||(renderer?.hit?renderer.hit(x,(y-.06)/.94):(x>.16&&x<.84&&y>.10&&y<.96));
   if(hit!==lastHit){lastHit=hit;ignore=!hit;await win.setIgnoreCursorEvents(ignore);}
-  hitTimer=setTimeout(()=>void hitCheck(),hit?100:250);
+  hitTimer=setTimeout(()=>void hitCheck(generation),hit?100:250);
  }
- await load(settings);void hitCheck();
+ await load(settings);restartHit();
  const companionTimer=setInterval(()=>void progress(),60000);
  window.addEventListener('pagehide',()=>{clearInterval(companionTimer);clearTimeout(hitTimer);clearTimeout(hideBubble);renderer?.dispose();});
 }
