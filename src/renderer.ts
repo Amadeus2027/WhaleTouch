@@ -10,8 +10,8 @@ export class SpriteRenderer implements CharacterRenderer{
   const ctx=this.canvas.getContext('2d');if(!ctx||!this.image)return;
   const w=this.canvas.width,h=this.canvas.height;ctx.clearRect(0,0,w,h);
   let frame=0,cols=4,rows=this.adult?3:4,img=this.image;
-  if(this.adult){frame=({idle:0,touch:touch?.zone==='head'?1:2,poke:3,lift:10,land:11,walk:Math.floor(elapsed/220)%2?8:9,eat:4,sleep:7,wake:5,chat:5,focus:6} satisfies Record<Action,number>)[action];}
-  else{frame=({idle:0,touch:1,poke:8,lift:14,land:15,walk:Math.floor(elapsed/240)%2?12:13,eat:6,sleep:11,wake:4,chat:10,focus:2} satisfies Record<Action,number>)[action];if(action==='idle'&&this.idle){img=this.idle;cols=2;rows=1;frame=0;}}
+  if(this.adult){frame=({idle:0,touch:({head:1,neck:2,chest:3,waist:2,hips:3,thigh:11,shin:11,foot:11} as const)[touch?.zone??'head'],poke:3,lift:10,land:11,walk:Math.floor(elapsed/220)%2?8:9,eat:4,sleep:7,wake:5,chat:5,focus:6} satisfies Record<Action,number>)[action];}
+  else{frame=({idle:0,touch:({head:1,neck:3,chest:4,waist:2,hips:8,thigh:14,shin:15,foot:15} as const)[touch?.zone??'head'],poke:8,lift:14,land:15,walk:Math.floor(elapsed/240)%2?12:13,eat:6,sleep:11,wake:4,chat:10,focus:2} satisfies Record<Action,number>)[action];if(action==='idle'&&this.idle){img=this.idle;cols=2;rows=1;frame=0;}}
   const sw=img.naturalWidth/cols,sh=img.naturalHeight/rows;
   const size=this.adult?Math.min(w*.95,h*.96*sw/sh):Math.min(w*1.12,h*.90);
   const dh=size*sh/sw;const x=(w-size)/2,y=h-dh-16;

@@ -425,7 +425,16 @@ fn main() {
             }});
             Ok(())
         })
-        .on_window_event(|window,event|{if window.label()=="pet"{if let tauri::WindowEvent::CloseRequested{api,..}=event{api.prevent_close();hide_pet(window.app_handle());}}})
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                if window.label() == "pet" {
+                    api.prevent_close();
+                    hide_pet(window.app_handle());
+                } else if window.label() == "panel" {
+                    window.app_handle().state::<AppState>().chat_cancel.send_modify(|n| *n += 1);
+                }
+            }
+        })
         .invoke_handler(tauri::generate_handler![snapshot,save_settings,save_key,set_touch,window_action,pet_action,record_progress,set_timer,get_cubism_core,import_model,api::get_balance,api::list_models,api::start_chat,api::cancel_chat])
         .build(tauri::generate_context!()).expect("WhaleTouch 启动失败")
         .run(|app,event|{if let tauri::RunEvent::Exit=event{app.state::<AppState>().pad.disable();}});
