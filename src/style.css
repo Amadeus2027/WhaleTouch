@@ -7,3 +7,5 @@
 
 /* The companion occupies roughly half the control window, including the adult form. */
 .home-grid{grid-template-columns:minmax(0,1.9fr) minmax(210px,1fr)}.character-stage{height:350px}.character-stage canvas{height:380px;width:365px;max-width:100%}.stage-orbit{width:260px;height:260px;top:50px;left:calc(50% - 130px)}.hello-bubble{top:82px}.home-side .account-card,.home-side .focus-card{display:flex;flex-direction:column;justify-content:center}.home-side .balance-total{font-size:40px;margin-top:24px}.home-side .timer-small{font-size:40px;margin-top:20px}.home-side .focus-card p{margin:8px 0 20px}.s1{top:80px;left:25px}.s2{bottom:50px;right:24px}@media(min-width:1200px){.character-stage{height:390px}.character-stage canvas{height:425px;width:410px}}
+/* Keep large character previews inside the window; secondary controls scroll. */
+.app-window{grid-template-rows:minmax(0,1fr)}.main-area,.sidebar{min-height:0}.content{min-height:0}
