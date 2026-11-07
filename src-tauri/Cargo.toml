@@ -9,7 +9,7 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 whaletouch-core = { path = "../core" }
-tauri = { version = "2", features = ["tray-icon", "image-png"] }
+tauri = { version = "2", features = ["tray-icon", "image-png", "protocol-asset"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 reqwest = { version = "0.12", default-features = false, features = ["json", "stream", "native-tls"] }

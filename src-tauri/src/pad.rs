@@ -10,17 +10,20 @@ pub struct Options {pub gain:f32,pub light:bool,pub mapping:Mapping}
 impl Default for Options {fn default()->Self{Self{gain:0.45,light:true,mapping:Mapping::default()}}}
 struct Session {stop:Arc<AtomicBool>,worker:JoinHandle<()>}
 #[derive(Default)]
-pub struct Controller {session:Mutex<Option<Session>>,pub options:Arc<Mutex<Options>>}
+pub struct Controller {transition:Mutex<()>,session:Mutex<Option<Session>>,pub options:Arc<Mutex<Options>>}
 impl Controller {
     pub fn enabled(&self)->bool {self.session.lock().unwrap().as_ref().is_some_and(|s|!s.worker.is_finished())}
     pub fn disable(&self) {
+        let _guard=self.transition.lock().unwrap();self.disable_inner();
+    }
+    fn disable_inner(&self) {
         if let Some(s)=self.session.lock().unwrap().take(){
             s.stop.store(true,Ordering::Release);
             let _=s.worker.join(); // read_timeout bounds shutdown; handles drop before returning.
         }
     }
     pub fn enable(&self,app:AppHandle)->Result<String,String>{
-        self.disable();
+        let _guard=self.transition.lock().unwrap();self.disable_inner();
         #[cfg(not(windows))] {let _=app;return Err("DualSense 触摸仅支持 Windows USB 连接；当前可用鼠标演示。".into())}
         #[cfg(windows)] {
             use hidapi::HidApi;

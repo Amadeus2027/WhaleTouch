@@ -139,7 +139,7 @@ fn main(){
     tauri::Builder::default()
         .setup(|app|{
             let dir=app.path().app_data_dir()?;std::fs::create_dir_all(&dir)?;
-            let settings:Settings=read(dir.join("settings.json"));let pad=pad::Controller::default();*pad.options.lock().unwrap()=settings.pad;
+            let mut settings:Settings=read(dir.join("settings.json"));settings.pad.mapping.chibi=settings.character=="chibi";let pad=pad::Controller::default();*pad.options.lock().unwrap()=settings.pad;
             let (cancel,_)=tokio::sync::watch::channel(0);let (timer_changed,_)=tokio::sync::watch::channel(0);
             app.manage(AppState{progress:Mutex::new(read(dir.join("progress.json"))),notices:Mutex::new(read(dir.join("notices.json"))),dir,client:reqwest::Client::builder().user_agent("WhaleTouch/0.1").build()?,settings:Mutex::new(settings),pad,balance:Mutex::new(None),chat_cancel:cancel,timer:Mutex::new(None),timer_changed});
             use tauri::menu::{Menu,MenuItem};
