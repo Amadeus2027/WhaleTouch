@@ -18,6 +18,22 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Build Windows application
         run: npm run package
+      - name: Minimal Windows process startup
+        shell: pwsh
+        run: |
+          $petProcess = Start-Process -FilePath "$PWD/target/release/whaletouch.exe" -PassThru
+          try {
+            Start-Sleep -Seconds 5
+            $petProcess.Refresh()
+            if ($petProcess.HasExited) {
+              throw "WhaleTouch exited during startup (code $($petProcess.ExitCode))."
+            }
+            Write-Output "WhaleTouch remained running for the 5-second startup check."
+          } finally {
+            if (-not $petProcess.HasExited) {
+              taskkill /PID $petProcess.Id /T /F | Out-Null
+            }
+          }
       - name: Collect portable application and notices
         shell: pwsh
         run: |

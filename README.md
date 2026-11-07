@@ -4,6 +4,8 @@
 
 **Windows 桌面应用 · Tauri + Rust · 手柄默认不接管 · 无操作静态休眠**
 
+![成女版大幅角色预览与轻玻璃控制面板](docs/preview.png)
+
 ## 使用
 
 从仓库 **Actions → Windows package → Run workflow** 构建。在成功运行的 Artifacts 中下载 Windows 包；便携版解压后运行 `whaletouch.exe`，也可用 NSIS 安装包。当前为未签名的 0.1 开发版本。安装与硬件实测状态见 [验证记录](docs/VALIDATION.md)。
