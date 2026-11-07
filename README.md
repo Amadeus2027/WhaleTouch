@@ -8,6 +8,10 @@
 
 ## 使用
 
+**[下载 Windows 首版（便携版＋安装包）](https://github.com/Amadeus2027/WhaleTouch/actions/runs/42358006998/artifacts/13568771208)** · [构建与启动记录](https://github.com/Amadeus2027/WhaleTouch/actions/runs/42358006998)
+
+GitHub Artifacts 下载需要登录，保存 14 天；过期后可运行下述构建流程重新生成。
+
 从仓库 **Actions → Windows package → Run workflow** 构建。在成功运行的 Artifacts 中下载 Windows 包；便携版解压后运行 `whaletouch.exe`，也可用 NSIS 安装包。当前为未签名的 0.1 开发版本。安装与硬件实测状态见 [验证记录](docs/VALIDATION.md)。
 
 1. 第一次打开会显示桌宠和控制面板；以后右键桌宠或托盘打开面板。

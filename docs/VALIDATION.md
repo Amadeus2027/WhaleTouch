@@ -10,7 +10,13 @@
 - 生产预览静态图集：1 秒采样内 Canvas 新增绘制为 0；这只验证停绘逻辑，不代表 Windows 进程性能数据。
 - 成女预览已放大为 380px 高，适用于约 800px 高的软件窗口，独立桌宠仍使用相同成女动作图集。
 
-Windows x64 首轮构建通过：便携 EXE 与 NSIS 安装包均已产出。记录：[Actions 42356802640](https://github.com/Amadeus2027/WhaleTouch/actions/runs/42356802640)。放大的成女预览版本亦已构建并通过一次 5 秒进程启动检查：[Actions 42357321737](https://github.com/Amadeus2027/WhaleTouch/actions/runs/42357321737)。隐藏恢复与投喂记账修复另做最终打包。不将进程存活检查描述为完整窗口交互或 HID 真机通过。
+Windows x64 最终构建与 5 秒进程启动检查均通过，便携 EXE 与 NSIS 安装包已产出：
+
+- [最终构建记录](https://github.com/Amadeus2027/WhaleTouch/actions/runs/42358006998)
+- [Windows 下载包](https://github.com/Amadeus2027/WhaleTouch/actions/runs/42358006998/artifacts/13568771208)
+- 放大预览后的窗口约束已核对：760px 高窗口中底栏底边为 759px，内容区可滚动，底部控制不再被裁掉。
+
+启动检查仅确认进程连续运行 5 秒后正常由构建脚本清理，不代表完整 Windows 窗口交互、HID 真机或官方 API 已通过。没有增加 E2E 回归、长压测或批量哈希。
 
 待 Windows 真机：
 
